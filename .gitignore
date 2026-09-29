@@ -1,0 +1,21 @@
+# Dossiers de build .NET
+bin/
+obj/
+
+# Fichiers utilisateur Visual Studio / Rider
+*.user
+*.suo
+.vs/
+.vscode/
+
+# Artefacts Android
+*.apk
+*.ap_
+*.dex
+
+# Fichiers spécifiques à la machine
+*.DotSettings.user
+
+# Système
+.DS_Store
+Thumbs.db
