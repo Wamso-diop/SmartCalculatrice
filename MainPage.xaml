@@ -1,0 +1,156 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="SmartCalculator.MainPage"
+             BackgroundColor="{StaticResource BgMain}">
+
+    <Grid x:Name="RootGrid">
+
+        <!-- Grille PORTRAIT : dimensions fixes, définies une fois pour toutes -->
+        <Grid x:Name="PortraitGrid" IsVisible="False" Padding="6" RowSpacing="4" ColumnSpacing="4">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="2.2*" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="2.6*" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+        </Grid>
+
+        <!-- Grille PAYSAGE : dimensions fixes, définies une fois pour toutes -->
+        <Grid x:Name="LandscapeGrid" IsVisible="False" Padding="6" RowSpacing="4" ColumnSpacing="4">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+        </Grid>
+
+        <!-- Les blocs réels : déclarés ici au départ, déplacés par code
+             dans PortraitGrid ou LandscapeGrid selon l'orientation -->
+
+        <HorizontalStackLayout x:Name="HeaderBar" HorizontalOptions="Fill" Margin="2,0">
+            <Label Text="CALC" TextColor="{StaticResource TextPrimary}"
+                   FontSize="15" FontAttributes="Bold" VerticalOptions="Center"
+                   HorizontalOptions="StartAndExpand" />
+            <Label x:Name="MemoryIndicator" Text="M" TextColor="{StaticResource BtnScientific}"
+                   FontSize="13" FontAttributes="Bold" IsVisible="False"
+                   Margin="0,0,8,0" VerticalOptions="Center" />
+            <Button x:Name="AngleModeButton" Text="DEG" Style="{StaticResource ScientificButton}"
+                    WidthRequest="46" HeightRequest="30" Clicked="OnAngleModeToggle" Margin="0,0,4,0" />
+            <Button Text="📜" WidthRequest="34" HeightRequest="30" BackgroundColor="{StaticResource BgSecondary}"
+                    TextColor="{StaticResource TextPrimary}" CornerRadius="8" Clicked="OnHistoryToggle" />
+        </HorizontalStackLayout>
+
+        <Border x:Name="DisplayBorder" Stroke="{StaticResource BorderColor}" StrokeThickness="1"
+                BackgroundColor="{StaticResource BgSecondary}" Padding="10"
+                MinimumHeightRequest="66">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="10" />
+            </Border.StrokeShape>
+            <VerticalStackLayout Spacing="0" VerticalOptions="Center">
+                <Label x:Name="ExpressionLabel" Text=" " TextColor="{StaticResource TextSecondary}"
+                       FontSize="14" HorizontalOptions="End" LineBreakMode="TailTruncation" />
+                <Label x:Name="ResultLabel" Text="0" TextColor="{StaticResource TextPrimary}"
+                       FontSize="30" FontAttributes="Bold" HorizontalOptions="End" LineBreakMode="TailTruncation" />
+            </VerticalStackLayout>
+        </Border>
+
+        <Grid x:Name="ScientificPanel" RowDefinitions="*,*,*,*" ColumnDefinitions="*,*,*,*" RowSpacing="2" ColumnSpacing="2">
+            <Button Grid.Row="0" Grid.Column="0" Text="√" Style="{StaticResource ScientificButton}" Clicked="OnFunctionClicked" />
+            <Button Grid.Row="0" Grid.Column="1" Text="x²" Style="{StaticResource ScientificButton}" Clicked="OnFunctionClicked" />
+            <Button Grid.Row="0" Grid.Column="2" Text="xʸ" Style="{StaticResource ScientificButton}" Clicked="OnPowerClicked" />
+            <Button Grid.Row="0" Grid.Column="3" Text="1/x" Style="{StaticResource ScientificButton}" Clicked="OnFunctionClicked" />
+
+            <Button Grid.Row="1" Grid.Column="0" Text="|x|" Style="{StaticResource ScientificButton}" Clicked="OnFunctionClicked" />
+            <Button Grid.Row="1" Grid.Column="1" Text="n!" Style="{StaticResource ScientificButton}" Clicked="OnFunctionClicked" />
+            <Button Grid.Row="1" Grid.Column="2" Text="sin" Style="{StaticResource ScientificButton}" Clicked="OnFunctionClicked" />
+            <Button Grid.Row="1" Grid.Column="3" Text="cos" Style="{StaticResource ScientificButton}" Clicked="OnFunctionClicked" />
+
+            <Button Grid.Row="2" Grid.Column="0" Text="tan" Style="{StaticResource ScientificButton}" Clicked="OnFunctionClicked" />
+            <Button Grid.Row="2" Grid.Column="1" Text="log" Style="{StaticResource ScientificButton}" Clicked="OnFunctionClicked" />
+            <Button Grid.Row="2" Grid.Column="2" Text="ln" Style="{StaticResource ScientificButton}" Clicked="OnFunctionClicked" />
+            <Button Grid.Row="2" Grid.Column="3" Text="10ˣ" Style="{StaticResource ScientificButton}" Clicked="OnFunctionClicked" />
+
+            <Button Grid.Row="3" Grid.Column="0" Text="eˣ" Style="{StaticResource ScientificButton}" Clicked="OnFunctionClicked" />
+            <Button Grid.Row="3" Grid.Column="1" Text="π" Style="{StaticResource ScientificButton}" Clicked="OnConstantClicked" />
+            <Button Grid.Row="3" Grid.Column="2" Text="(" Style="{StaticResource ScientificButton}" Clicked="OnParenClicked" />
+            <Button Grid.Row="3" Grid.Column="3" Text=")" Style="{StaticResource ScientificButton}" Clicked="OnParenClicked" />
+        </Grid>
+
+        <Grid x:Name="MemoryRow" ColumnDefinitions="*,*,*,*,*" ColumnSpacing="2">
+            <Button Grid.Column="0" Text="MC" Style="{StaticResource FunctionButton}" Clicked="OnMemoryClicked" />
+            <Button Grid.Column="1" Text="MR" Style="{StaticResource FunctionButton}" Clicked="OnMemoryClicked" />
+            <Button Grid.Column="2" Text="M+" Style="{StaticResource FunctionButton}" Clicked="OnMemoryClicked" />
+            <Button Grid.Column="3" Text="M−" Style="{StaticResource FunctionButton}" Clicked="OnMemoryClicked" />
+            <Button Grid.Column="4" Text="MS" Style="{StaticResource FunctionButton}" Clicked="OnMemoryClicked" />
+        </Grid>
+
+        <Grid x:Name="KeypadGrid" RowDefinitions="*,*,*,*,*" ColumnDefinitions="*,*,*,*" RowSpacing="2" ColumnSpacing="2">
+            <Button Grid.Row="0" Grid.Column="0" Text="AC" Style="{StaticResource FunctionButton}" Clicked="OnAllClearClicked" />
+            <Button Grid.Row="0" Grid.Column="1" Text="⌫" Style="{StaticResource FunctionButton}" Clicked="OnBackspaceClicked" />
+            <Button Grid.Row="0" Grid.Column="2" Text="%" Style="{StaticResource FunctionButton}" Clicked="OnPercentClicked" />
+            <Button Grid.Row="0" Grid.Column="3" Text="÷" Style="{StaticResource OperatorButton}" Clicked="OnOperatorClicked" />
+
+            <Button Grid.Row="1" Grid.Column="0" Text="7" Style="{StaticResource DigitButton}" Clicked="OnDigitClicked" />
+            <Button Grid.Row="1" Grid.Column="1" Text="8" Style="{StaticResource DigitButton}" Clicked="OnDigitClicked" />
+            <Button Grid.Row="1" Grid.Column="2" Text="9" Style="{StaticResource DigitButton}" Clicked="OnDigitClicked" />
+            <Button Grid.Row="1" Grid.Column="3" Text="×" Style="{StaticResource OperatorButton}" Clicked="OnOperatorClicked" />
+
+            <Button Grid.Row="2" Grid.Column="0" Text="4" Style="{StaticResource DigitButton}" Clicked="OnDigitClicked" />
+            <Button Grid.Row="2" Grid.Column="1" Text="5" Style="{StaticResource DigitButton}" Clicked="OnDigitClicked" />
+            <Button Grid.Row="2" Grid.Column="2" Text="6" Style="{StaticResource DigitButton}" Clicked="OnDigitClicked" />
+            <Button Grid.Row="2" Grid.Column="3" Text="−" Style="{StaticResource OperatorButton}" Clicked="OnOperatorClicked" />
+
+            <Button Grid.Row="3" Grid.Column="0" Text="1" Style="{StaticResource DigitButton}" Clicked="OnDigitClicked" />
+            <Button Grid.Row="3" Grid.Column="1" Text="2" Style="{StaticResource DigitButton}" Clicked="OnDigitClicked" />
+            <Button Grid.Row="3" Grid.Column="2" Text="3" Style="{StaticResource DigitButton}" Clicked="OnDigitClicked" />
+            <Button Grid.Row="3" Grid.Column="3" Text="+" Style="{StaticResource OperatorButton}" Clicked="OnOperatorClicked" />
+
+            <Button Grid.Row="4" Grid.Column="0" Text="±" Style="{StaticResource FunctionButton}" Clicked="OnPlusMinusClicked" />
+            <Button Grid.Row="4" Grid.Column="1" Text="0" Style="{StaticResource DigitButton}" Clicked="OnDigitClicked" />
+            <Button Grid.Row="4" Grid.Column="2" Text="." Style="{StaticResource DigitButton}" Clicked="OnDecimalClicked" />
+            <Button Grid.Row="4" Grid.Column="3" Text="=" Style="{StaticResource EqualsButton}" Clicked="OnEqualsClicked" />
+        </Grid>
+
+        <!-- HISTORIQUE : reste directement enfant de RootGrid pour toujours flotter au-dessus -->
+        <Grid x:Name="HistoryOverlay" IsVisible="False" BackgroundColor="#EE0F0E1F">
+            <VerticalStackLayout Padding="14" Spacing="8">
+                <HorizontalStackLayout>
+                    <Label Text="Historique" TextColor="{StaticResource TextPrimary}" FontSize="18"
+                           FontAttributes="Bold" HorizontalOptions="StartAndExpand" />
+                    <Button Text="Effacer" Clicked="OnHistoryClear" BackgroundColor="{StaticResource BtnFunction}"
+                            TextColor="{StaticResource TextPrimary}" CornerRadius="8" Margin="0,0,8,0" />
+                    <Button Text="Fermer" Clicked="OnHistoryToggle" BackgroundColor="{StaticResource BtnOperator}"
+                            TextColor="{StaticResource TextPrimary}" CornerRadius="8" />
+                </HorizontalStackLayout>
+                <CollectionView x:Name="HistoryList" SelectionMode="Single" SelectionChanged="OnHistorySelected">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Border Stroke="{StaticResource BorderColor}" StrokeThickness="1" Padding="8" Margin="0,3">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="8" />
+                                </Border.StrokeShape>
+                                <VerticalStackLayout>
+                                    <Label Text="{Binding Expression}" TextColor="{StaticResource TextSecondary}" FontSize="13" />
+                                    <Label Text="{Binding Result, StringFormat='= {0}'}" TextColor="{StaticResource TextPrimary}"
+                                           FontSize="16" FontAttributes="Bold" />
+                                </VerticalStackLayout>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </VerticalStackLayout>
+        </Grid>
+
+    </Grid>
+</ContentPage>
